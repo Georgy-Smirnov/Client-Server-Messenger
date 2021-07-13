@@ -69,11 +69,11 @@ norm:
 #====================================>CLEAN_RULES<=============================#
 
 clean:
-				@${RM} ${OBJ1} ${OBJ2}
+				@${RM} ${OBJ1} ${OBJ2} ${OBJ}
 				@printf "\033[2K\r${_RED} '".o"' has been deleted. ${_END}🗑️\n"
 
 fclean:			clean	
-				@${RM} ${NAME1} ${NAME1}
+				@${RM} ${NAME1} ${NAME2}
 				@printf "\033[2K\r${_RED} '"${NAME1}"' and '"${NAME2}"' has been deleted. ${_END}🗑️\n"
 
 re:				fclean all

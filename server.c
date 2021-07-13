@@ -1,24 +1,22 @@
 #include "minitalk.h"
 
-void	func_one(int sig, siginfo_t *info, void *context)
-{
-	(void)sig;
-	(void)info;
-	(void)context;
-	printf("one\n");
-	my_char += count;
-	count /= 2;
-	kill(pid_server, SIGUSR1);
-}
+int my_char = 0, count = 128;
 
-void	func_zero(int sig, siginfo_t *info, void *context)
+void	func(int sig, siginfo_t *info, void *context)
 {
-	(void)sig;
 	(void)info;
 	(void)context;
-	printf("zero\n");
-	count /= 2;
-	kill(pid_server, SIGUSR1);
+	pid_t pid_client = info->si_pid;
+	if (sig == SIGUSR1)
+	{
+		my_char += count;
+ 		count /= 2;	
+	}
+	if (sig == SIGUSR2)
+	{
+		count/=2;	
+	}
+	kill(pid_client, SIGUSR1);
 }
 
 void	print_pid(void)
@@ -33,26 +31,28 @@ void	print_pid(void)
 
 int main(void)
 {
-	struct sigaction one;
-	struct sigaction zero;
+	struct sigaction sa;
 
-	one.sa_sigaction = func_one;
-	zero.sa_sigaction = func_zero;
-	one.sa_flags = SA_SIGINFO;
-	zero.sa_flags = SA_SIGINFO;
-	sigaction(SIGUSR1, &one, NULL);
-	sigaction(SIGUSR2, &zero, NULL);
+	sigemptyset(&sa.sa_mask);
+	sigaddset(&sa.sa_mask, SIGUSR1);
+	sigaddset(&sa.sa_mask, SIGUSR2);
+	sa.sa_sigaction = func;
+	sa.sa_flags = SA_SIGINFO;
+	sigaction(SIGUSR1, &sa, NULL);
+	sigaction(SIGUSR2, &sa, NULL);
 	print_pid();
 	do
 	{
-		pause();
-		printf(">>>>%d\n", count);
 		if (count == 0)
 		{
-			write(1, &my_char, 1);
+			if (my_char == 0)
+			{
+				write(1, "\n", 1);
+			}
+			else
+				write(1, &my_char, 1);
 			count = 128;
 			my_char = 0;
 		}
 	} while (1);
-	
 }

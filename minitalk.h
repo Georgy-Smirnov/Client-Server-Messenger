@@ -2,8 +2,9 @@
 #include <unistd.h>
 #include <signal.h>
 
-int my_char;
-int	count = 128;
+
+#include <string.h>
+
 pid_t	pid_server;
 
 int	ft_atoi(const char *str);

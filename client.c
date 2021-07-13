@@ -14,12 +14,19 @@ void	send_char(char c, int pid_server)
 	while (i >= 1)
 	{
 		if (i & c)
+		{
+			write(1, "1", 1);
 			kill(pid_server, SIGUSR1);
+		}
 		else
+		{
+			write(1, "0", 1);
 			kill(pid_server, SIGUSR2);
+		}
 		pause();
 		i/=2;
 	}
+	write(1, "\n", 1);
 }
 
 void	send_message(char *p_serv, char *message)
@@ -40,6 +47,9 @@ void	send_message(char *p_serv, char *message)
 int main(int argc, char **argv)
 {
 	struct sigaction sa;
+
+	sigemptyset(&sa.sa_mask);
+	sigaddset(&sa.sa_mask, SIGUSR1);
 	sa.sa_sigaction = func_wait;
 	sa.sa_flags = SA_SIGINFO;
 	sigaction(SIGUSR1, &sa, NULL);
