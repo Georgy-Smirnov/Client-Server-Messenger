@@ -32,8 +32,9 @@ void	print_pid(void)
 	pid_t	server_pid;
 
 	server_pid = getpid();
+	write (1, "\e[1;34mPID: ", 12);
 	ft_putnbr_fd((int)server_pid, 1);
-	write(1, "\n", 1);
+	write(1, "\e[0m\n", 5);
 }
 
 void	init(struct sigaction *sa)
