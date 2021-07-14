@@ -4,27 +4,34 @@ void	func_wait(int sig, siginfo_t *info, void *context)
 {
 	(void)info;
 	(void)context;
-	if (sig == SIGUSR2)
-		write(1, "The message was delivered!\n", 27);
+	if (sig == SIGUSR1)
+		write (1, "\e[1;32mThe message was delivered!\n\e[0m", 38);
 }
 
-void	send_char(char c, int pid_server)
+int	send_char(char c, int pid_server)
 {
 	int	i;
 
 	i = 128;
-	while (i >= 1)
+	while (i)
 	{
 		if (i & c)
-			kill(pid_server, SIGUSR1);
+		{
+			if (kill(pid_server, SIGUSR1))
+				return (error());
+		}
 		else
-			kill(pid_server, SIGUSR2);
-		pause();
+		{
+			if (kill(pid_server, SIGUSR2))
+				return (error());
+		}
+		usleep(600);
 		i /= 2;
 	}
+	return (0);
 }
 
-void	send_message(char *p_serv, char *message)
+int	send_message(char *p_serv, char *message)
 {
 	int	i;
 	int	pid_server;
@@ -33,21 +40,22 @@ void	send_message(char *p_serv, char *message)
 	pid_server = ft_atoi(p_serv);
 	while (message[i])
 	{
-		send_char(message[i], pid_server);
+		if (send_char(message[i], pid_server))
+			return (1);
 		i++;
 	}
-	send_char(message[i], pid_server);
+	if (send_char(message[i], pid_server))
+		return (1);
+	return (0);
 }
 
 void	init(struct sigaction *sa)
 {
 	sigemptyset(&(sa->sa_mask));
 	sigaddset(&(sa->sa_mask), SIGUSR1);
-	sigaddset(&(sa->sa_mask), SIGUSR2);
 	sa->sa_sigaction = func_wait;
 	sa->sa_flags = SA_SIGINFO;
 	sigaction(SIGUSR1, sa, NULL);
-	sigaction(SIGUSR2, sa, NULL);
 }
 
 int	main(int argc, char **argv)
@@ -56,7 +64,10 @@ int	main(int argc, char **argv)
 
 	init(&sa);
 	if (argc == 3)
-		send_message(argv[1], argv[2]);
+	{
+		if (send_message(argv[1], argv[2]))
+			return (1);
+	}
 	else
 		write(1, "Use: ./client [pid_server] [message]\n", 37);
 	return (0);

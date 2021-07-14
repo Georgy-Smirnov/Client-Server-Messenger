@@ -48,3 +48,25 @@ int	ft_atoi(const char *str)
 		return (-rezult);
 	return (rezult);
 }
+
+void	*ft_memset(void *b, int c, size_t len)
+{
+	int				i;
+	unsigned char	*a;
+
+	i = 0;
+	a = (unsigned char *)b;
+	while (len)
+	{
+		a[i] = c;
+		i++;
+		len--;
+	}
+	return (a);
+}
+
+int	error(void)
+{
+	write (1, "\e[1;31mThe message was not delivered!\n\e[0m", 43);
+	return (1);
+}

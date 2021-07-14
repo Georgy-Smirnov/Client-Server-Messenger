@@ -48,11 +48,11 @@ all:			${NAME1} ${NAME2}
 
 ${NAME1}:		${OBJ1} ${OBJ}
 				@${GCC} ${CFLAGS} -o ${NAME1} ${OBJ1} ${OBJ}
-				@printf "\033[2K\r${_GREEN} Server create: '${NAME1}'. ${_END}✅\n"
+				@printf "\033[2K\r${_GREEN} FILE create: '${NAME1}'. ${_END}✅\n"
 
 ${NAME2}:		${OBJ2} ${OBJ}
 				@${GCC} ${CFLAGS} -o ${NAME2} ${OBJ2} ${OBJ}
-				@printf "\033[2K\r${_GREEN} Client create: '${NAME2}'. ${_END}✅\n"
+				@printf "\033[2K\r${_GREEN} FILE create: '${NAME2}'. ${_END}✅\n"
 
 #===========================>COMPILED_SOURCES_RULES<===========================#
 
