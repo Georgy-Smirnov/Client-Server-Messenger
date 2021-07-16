@@ -5,15 +5,11 @@
 # include <unistd.h>
 # include <signal.h>
 
-# define BUF 128
-
 typedef struct s_minitalk
 {
-	char	message[BUF];
-	int		i;
+	int		my_char;
+	int		pid;
 	int		count_bit;
-	int		end_message;
-	int		buf_overflow;
 }				t_minitalk;
 
 t_minitalk	g_info;

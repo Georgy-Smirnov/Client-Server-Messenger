@@ -25,7 +25,7 @@ int	send_char(char c, int pid_server)
 			if (kill(pid_server, SIGUSR2))
 				return (error());
 		}
-		usleep(600);
+		pause();
 		i /= 2;
 	}
 	return (0);
@@ -53,9 +53,11 @@ void	init(struct sigaction *sa)
 {
 	sigemptyset(&(sa->sa_mask));
 	sigaddset(&(sa->sa_mask), SIGUSR1);
+	sigaddset(&(sa->sa_mask), SIGUSR2);
 	sa->sa_sigaction = func_wait;
 	sa->sa_flags = SA_SIGINFO;
 	sigaction(SIGUSR1, sa, NULL);
+	sigaction(SIGUSR2, sa, NULL);
 }
 
 int	main(int argc, char **argv)

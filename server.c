@@ -3,28 +3,29 @@
 void	func(int sig, siginfo_t *info, void *context)
 {
 	(void)context;
+	if (info->si_pid != 0)
+		g_info.pid = info->si_pid;
 	if (sig == SIGUSR1)
-		g_info.message[g_info.i]++;
-	if (g_info.i == BUF - 5)
-		g_info.buf_overflow = 1;
+		g_info.my_char++;
 	if (g_info.count_bit == 7)
 	{
-		if (g_info.message[g_info.i] == 0)
+		if (g_info.my_char == 0)
 		{
-			g_info.end_message = 1;
-			kill(info->si_pid, SIGUSR1);
+			write(1, "\n", 1);
+			kill(g_info.pid, SIGUSR1);
 		}
 		else
-		{
-			g_info.count_bit = 0;
-			g_info.i++;
-		}
+			write(1, &g_info.my_char, 1);
+		g_info.count_bit = 0;
+		g_info.my_char = 0;
 	}
 	else
 	{
-		g_info.message[g_info.i] <<= 1;
+		g_info.my_char <<= 1;
 		g_info.count_bit++;
 	}
+	usleep(50);
+	kill(g_info.pid, SIGUSR2);
 }
 
 void	print_pid(void)
@@ -39,11 +40,8 @@ void	print_pid(void)
 
 void	init(struct sigaction *sa)
 {
-	g_info.i = 0;
 	g_info.count_bit = 0;
-	g_info.end_message = 0;
-	g_info.buf_overflow = 0;
-	ft_memset(g_info.message, 0, BUF);
+	g_info.my_char = 0;
 	sigemptyset(&(sa->sa_mask));
 	sigaddset(&(sa->sa_mask), SIGUSR1);
 	sigaddset(&(sa->sa_mask), SIGUSR2);
@@ -61,17 +59,5 @@ int	main(void)
 	print_pid();
 	while (1)
 	{
-		pause();
-		if (g_info.buf_overflow || g_info.end_message)
-		{
-			write(1, &g_info.message, g_info.i);
-			ft_memset(g_info.message, 0, BUF);
-			g_info.i = 0;
-			g_info.count_bit = 0;
-			if (g_info.end_message)
-				write(1, "\n", 1);
-			g_info.buf_overflow = 0;
-			g_info.end_message = 0;
-		}
 	}
 }
